@@ -144,8 +144,8 @@ function render(){
                 <td>$ ${p.precio.toFixed(2)}</td>
                 <td>${p.mano || "-"}</td>
                 <td class="actions">
-                    <button onclick="cambiarStock(${p.id},1)">+1</button>
                     <button onclick="cambiarStock(${p.id},-1)">-1</button>
+                    <button onclick="cambiarStock(${p.id},1)">1</button>
                     <button onclick="editarPrecio(${p.id})">Editar precio</button>
                     <button onclick="borrar(${p.id})">Borrar</button>
                 </td>
