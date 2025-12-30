@@ -66,7 +66,10 @@
 
 <script>
 let inventario = JSON.parse(localStorage.getItem("inventario_pv")) || [];
-
+function toggleForm(){
+    const f = document.getElementById("formulario");
+    f.style.display = (f.style.display === "none") ? "block" : "none";
+}
 function guardar(){
     localStorage.setItem("inventario_pv", JSON.stringify(inventario));
 }
