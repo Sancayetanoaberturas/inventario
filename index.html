@@ -26,7 +26,11 @@
 <h2>Inventario — Puertas y Ventanas</h2>
 
 <div class="card">
-    <h3>Agregar producto</h3>
+  <h3 onclick="toggleForm()" style="cursor:pointer;">
+    ➕ Agregar producto
+  </h3>
+
+  <div id="formulario" style="display:none;">
     <input id="nombre" placeholder="Nombre del producto">
     <input id="cantidad" type="number" placeholder="Cantidad">
     <input id="precio" type="number" placeholder="Precio">
@@ -37,6 +41,7 @@
         <option>Doble</option>
     </select>
     <button onclick="agregar()">Agregar</button>
+  </div>
 </div>
 
 <div class="card">
