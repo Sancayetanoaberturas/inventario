@@ -10,7 +10,15 @@
     input,select,button{padding:8px;margin:5px 0;width:100%}
     table{width:100%;border-collapse:collapse;margin-top:10px}
     th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
-    .actions button{margin-right:5px}
+    .actions button{margin-right:5px}.actions{
+    display:flex;
+    gap:6px;          /* espacio entre botones */
+}
+
+.actions button{
+    width:auto;       /* deja de ocupar ancho completo */
+    padding:6px 10px; /* más compactos */
+}
 </style>
 </head>
 <body>
