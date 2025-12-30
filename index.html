@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Inventario — Puertas y Ventanas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+    body{font-family:Arial;padding:20px;background:#f4f4f4}
+    .card{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px;box-shadow:0 3px 10px rgba(0,0,0,.1)}
+    input,select,button{padding:8px;margin:5px 0;width:100%}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}
+    .actions button{margin-right:5px}
+</style>
+</head>
+<body>
+
+<h2>Inventario — Puertas y Ventanas</h2>
+
+<div class="card">
+    <h3>Agregar producto</h3>
+    <input id="nombre" placeholder="Nombre del producto">
+    <input id="cantidad" type="number" placeholder="Cantidad">
+    <input id="precio" type="number" placeholder="Precio">
+    <select id="mano">
+        <option value="">— Solo para puertas —</option>
+        <option>Izquierda</option>
+        <option>Derecha</option>
+        <option>Doble</option>
+    </select>
+    <button onclick="agregar()">Agregar</button>
+</div>
+
+<div class="card">
+    <h3>Buscar</h3>
+    <input id="buscar" placeholder="Escribí para filtrar..." oninput="render()">
+</div>
+
+<div class="card">
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Mano</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla"></tbody>
+</table>
+</div>
+
+<script>
+let inventario = JSON.parse(localStorage.getItem("inventario_pv")) || [];
+
+function guardar(){
+    localStorage.setItem("inventario_pv", JSON.stringify(inventario));
+}
+
+function agregar(){
+    const nombre = document.getElementById("nombre").value.trim();
+    const cantidad = parseInt(document.getElementById("cantidad").value||0);
+    const precio = parseFloat(document.getElementById("precio").value||0);
+    const mano = document.getElementById("mano").value;
+
+    if(!nombre) return alert("Poné un nombre");
+
+    inventario.push({id:Date.now(), nombre, cantidad, precio, mano});
+    guardar();
+    limpiar();
+    render();
+}
+
+function limpiar(){
+    document.getElementById("nombre").value="";
+    document.getElementById("cantidad").value="";
+    document.getElementById("precio").value="";
+    document.getElementById("mano").value="";
+}
+
+function cambiarStock(id, delta){
+    inventario = inventario.map(p=>p.id===id?{...p,cantidad:p.cantidad+delta}:p);
+    guardar();
+    render();
+}
+
+function borrar(id){
+    if(confirm("¿Eliminar este producto?")){
+        inventario = inventario.filter(p=>p.id!==id);
+        guardar();
+        render();
+    }
+}
+
+function render(){
+    const q = document.getElementById("buscar").value.toLowerCase();
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = "";
+
+    inventario
+        .filter(p=>p.nombre.toLowerCase().includes(q))
+        .forEach(p=>{
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${p.nombre}</td>
+                <td>${p.cantidad}</td>
+                <td>$ ${p.precio.toFixed(2)}</td>
+                <td>${p.mano||"-"}</td>
+                <td class="actions">
+                    <button onclick="cambiarStock(${p.id},1)">+1</button>
+                    <button onclick="cambiarStock(${p.id},-1)">-1</button>
+                    <button onclick="borrar(${p.id})">Borrar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+}
+
+render();
+</script>
+
+</body>
+</html>
