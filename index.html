@@ -19,6 +19,14 @@
         width:auto;
         padding:6px 10px;
     }
+
+    /* --- Tip opcional: estética drag & drop --- */
+    tr[draggable="true"]{
+        cursor: grab;
+    }
+    tr.dragging{
+        opacity: .5;
+    }
 </style>
 </head>
 <body>
@@ -66,6 +74,7 @@
 
 <script>
 let inventario = JSON.parse(localStorage.getItem("inventario_pv")) || [];
+let dragStartIndex = null;
 
 function toggleForm(){
     const f = document.getElementById("formulario");
@@ -129,6 +138,37 @@ function editarPrecio(id){
     render();
 }
 
+/* ========= DRAG & DROP ========= */
+
+function dragStart(e){
+    const tr = e.target.closest("tr");
+    dragStartIndex = +tr.dataset.index;
+    tr.classList.add("dragging");
+}
+
+function dragOver(e){
+    e.preventDefault();
+}
+
+function drop(e){
+    const tr = e.target.closest("tr");
+    const dragEndIndex = +tr.dataset.index;
+
+    // intercambiar en el array
+    const temp = inventario[dragStartIndex];
+    inventario[dragStartIndex] = inventario[dragEndIndex];
+    inventario[dragEndIndex] = temp;
+
+    guardar();
+    render();
+}
+
+function dragEnd(){
+    document.querySelectorAll("tr").forEach(tr=>tr.classList.remove("dragging"));
+}
+
+/* ========= RENDER ========= */
+
 function render(){
     const q = document.getElementById("buscar").value.toLowerCase();
     const tbody = document.getElementById("tabla");
@@ -136,8 +176,12 @@ function render(){
 
     inventario
         .filter(p=>p.nombre.toLowerCase().includes(q))
-        .forEach(p=>{
+        .forEach((p,index)=>{
             const tr = document.createElement("tr");
+
+            tr.setAttribute("draggable", "true");
+            tr.dataset.index = index;
+
             tr.innerHTML = `
                 <td>${p.nombre}</td>
                 <td>${p.cantidad}</td>
@@ -150,6 +194,12 @@ function render(){
                     <button onclick="borrar(${p.id})">Borrar</button>
                 </td>
             `;
+
+            tr.addEventListener("dragstart", dragStart);
+            tr.addEventListener("dragover", dragOver);
+            tr.addEventListener("drop", drop);
+            tr.addEventListener("dragend", dragEnd);
+
             tbody.appendChild(tr);
         });
 }
